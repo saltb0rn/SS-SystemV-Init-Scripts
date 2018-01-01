@@ -1,0 +1,9 @@
+** About
+   These shell scripts are SystemV style scripts for managing shadowsocks service.
+   The shadowsocks-server is for server and shadowsocks-client is for client.
+
+** Usage
+   Assume you have already set up the shadowsocks configuration file and installed
+   Shadowsocks Python version.
+   Copy the scirpt to /etc/init.d and change the file permission of it to 744.
+   Then, update-rc.d <script-name> defaults. All works are done, enjoy.

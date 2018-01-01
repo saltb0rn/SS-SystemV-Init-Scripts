@@ -1,0 +1,94 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:
+# Required-Start: $remote_fs $syslog
+# Required-Stop:  $remote_fs $syslog
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6
+# Short-Description: Start shadowsocks-client daemon at boot time
+# Description: Enable shadowsocks-client service
+### END INIT INFO
+
+name=shadowsocks-client
+command="sslocal -c /etc/shadowsocks.json -d start"
+pid_file="/var/run/$name.pid"
+stdout_log="/var/log/$name.log"
+stderr_log="/var/log/$name.err"
+
+get_pid() {
+    # pid=`ps -aux | grep -v grep | grep ${command} | awk '{print $2}'`
+    pid=`ps -aux | grep -v grep | grep "${command}" | tr -s ' ' | cut -d ' ' -f 2`
+    echo $pid
+}
+
+is_running() {
+    [ -f $pid_file ] && ps -p `get_pid` > /dev/null 2>&1
+}
+
+# Start the Shadowsocks services
+start() {
+    if is_running; then
+	echo "Already started"
+    else
+	echo "Starting $name.."
+	sslocal -c /etc/shadowsocks.json -d start
+	echo `get_pid` > $pid_file
+    fi
+}
+
+# Start the service shadowsocks
+stop() {
+    if is_running; then
+	echo "Stopping $name.."
+	kill `get_pid`
+	rm $pid_file
+	echo "$name was Stopped"
+    else
+	echo "Already Stopped"
+    fi
+}
+
+# Restart the service shadowsocks
+restart() {
+    if is_running; then
+	stop
+	start
+	echo "The $name has been restarted"
+    else
+	echo "The $name is not working now"
+    fi
+}
+
+# Status
+status() {
+    if is_running; then
+	echo "Running"
+    else
+	echo "Stop"
+    fi
+}
+
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	restart
+	;;
+    status)
+	status
+	;;
+    # pid)
+    #	echo `get_pid`
+    #	;;
+    *)
+	echo -n "Usage: $name {start|stop|restart|status}"
+	exit 1
+	;;
+esac
+
+exit 0
