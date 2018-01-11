@@ -31,7 +31,8 @@ start() {
 	echo "Already started"
     else
 	echo "Starting $name.."
-	sslocal -c /etc/shadowsocks.json -d start
+	$command
+	# -c /etc/shadowsocks.json -d start
 	echo `get_pid` > $pid_file
     fi
 }
